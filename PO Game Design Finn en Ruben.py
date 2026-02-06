@@ -18,10 +18,4 @@ while running == True:
     p.display.flip()
     clock.tick(60)
 
-player_pos = [100, 100]
-player_speed = 4
-player_size = 32
-walking = False
-walk_frame = 0
-
 p.quit()
