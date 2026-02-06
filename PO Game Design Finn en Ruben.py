@@ -23,9 +23,9 @@ while running == True:
         player_x -= player_speed
     if keys[p.K_RIGHT] and player_x<680: 
         player_x += player_speed
-    if keys[p.K_UP] and player_y<680: 
+    if keys[p.K_UP] and player_y<180: 
         player_y -= player_speed
-    if keys[p.K_DOWN] and player_x>100: 
+    if keys[p.K_DOWN] and player_x>0: 
         player_y += player_speed
 
     for event in p.event.get():
