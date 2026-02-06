@@ -21,11 +21,11 @@ while running == True:
     keys = p.key.get_pressed() 
     if keys[p.K_LEFT] and player_x>0: 
         player_x -= player_speed
-    if keys[p.K_RIGHT] and player_x<550: 
+    if keys[p.K_RIGHT] and player_x<680: 
         player_x += player_speed
-    if keys[p.K_UP] and player_y<550: 
+    if keys[p.K_UP] and player_y<680: 
         player_y -= player_speed
-    if keys[p.K_DOWN] and player_x>0: 
+    if keys[p.K_DOWN] and player_x>100: 
         player_y += player_speed
 
     for event in p.event.get():
