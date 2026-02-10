@@ -13,7 +13,7 @@ while running == True:
     for event in p.event.get():
         if event.type == p.QUIT:
             running = False
-
+    
     screen.blit(platform, (0, 0))
     p.display.flip()
     clock.tick(60)
