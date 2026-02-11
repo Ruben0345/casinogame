@@ -13,7 +13,11 @@ p.mixer.music.play(-1)
 
 # Load image
 platform = p.image.load ("Tokyo Ghoul.png")
+dobbelsteen=p.image.load ("dobbelsteen.png")
+dobbelsteen=p.transform.scale(dobbelsteen, (50,50))
 
+dobbelsteen_x=161
+dobbelsteen_y=245
 player_x = 100
 player_y = 100
 player_speed = 4
@@ -36,12 +40,15 @@ while running == True:
     if keys[p.K_DOWN] and player_y<550 : 
         player_y += player_speed
 
+
     for event in p.event.get():
         if event.type == p.QUIT:
             running = False
     
     screen.blit(platform, (0, 0))
+    screen.blit(dobbelsteen, (dobbelsteen_x,dobbelsteen_y))
     screen.blit(player, (player_x,player_y))
+
     p.display.flip()
     clock.tick(60)
 
