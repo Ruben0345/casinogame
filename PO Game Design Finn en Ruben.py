@@ -1,6 +1,6 @@
 import pygame as p
 
-screen = p.display.set_mode((800, 600))
+screen = p.display.set_mode((736, 600))
 p.display.set_caption("casino basis")
 
 # Load image
@@ -21,11 +21,11 @@ while running == True:
     keys = p.key.get_pressed() 
     if keys[p.K_LEFT] and player_x>0: 
         player_x -= player_speed
-    if keys[p.K_RIGHT] and player_x<680: 
+    if keys[p.K_RIGHT] and player_x<670: 
         player_x += player_speed
-    if keys[p.K_UP] and player_y<180: 
+    if keys[p.K_UP] and player_y>0: 
         player_y -= player_speed
-    if keys[p.K_DOWN] and player_x>0: 
+    if keys[p.K_DOWN] and player_y<550 : 
         player_y += player_speed
 
     for event in p.event.get():
