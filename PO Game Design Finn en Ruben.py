@@ -1,4 +1,8 @@
 import pygame as p
+import time
+import random
+
+geld = 1000
 
 screen = p.display.set_mode((736, 600))
 p.display.set_caption("casino basis")
@@ -27,7 +31,7 @@ while running == True:
         player_y -= player_speed
     if keys[p.K_DOWN] and player_y<550 : 
         player_y += player_speed
-
+    
     for event in p.event.get():
         if event.type == p.QUIT:
             running = False
