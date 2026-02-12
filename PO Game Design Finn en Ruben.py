@@ -2,6 +2,7 @@ import pygame as p
 import time
 import random
 
+p.init()
 geld = 1000
 
 screen = p.display.set_mode((736, 600))
@@ -25,11 +26,14 @@ walking = False
 walk_frame = 0
 player = p.image.load("download.png")
 player = p.transform.scale(player, (50,50))
+font = p.font.SysFont(None, 36)
+text = font.render("Welkom", True, (255,255,255))
 
 # Main loop
 running = True
 clock = p.time.Clock()
 while running == True:
+    game_state = "main"
     keys = p.key.get_pressed() 
     if keys[p.K_LEFT] and player_x>0: 
         player_x -= player_speed
@@ -39,16 +43,25 @@ while running == True:
         player_y -= player_speed
     if keys[p.K_DOWN] and player_y<550 : 
         player_y += player_speed
+    if player.get_rect(topleft=(player_x, player_y)).colliderect(dobbelsteen.get_rect(topleft=(dobbelsteen_x, dobbelsteen_y))):
+        screen.blit(font.render("Druk E om te spelen", True, (255,255,0)), (300, 260))
+        screen.blit(text,(100,100))
+        if keys[p.K_e]:
+            game_state = "dice"
+    while game_state == "dice":
+        screen.fill((0, 0, 0))
+        screen.blit(font.render("Je hebt gedobbeld!", True, (255,255,255)), (200, 200))
+        p.display.flip()
+        time.sleep(2)
+        game_state = "main"
+    screen.blit(platform, (0, 0))
+    screen.blit(dobbelsteen, (dobbelsteen_x,dobbelsteen_y))
+    screen.blit(player, (player_x,player_y))
 
 
     for event in p.event.get():
         if event.type == p.QUIT:
             running = False
-    
-    screen.blit(platform, (0, 0))
-    screen.blit(dobbelsteen, (dobbelsteen_x,dobbelsteen_y))
-    screen.blit(player, (player_x,player_y))
-
     p.display.flip()
     clock.tick(60)
 
