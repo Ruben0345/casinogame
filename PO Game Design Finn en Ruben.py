@@ -16,7 +16,7 @@ p.mixer.music.play(-1)
 platform = p.image.load ("Tokyo Ghoul.png")
 dobbelsteen=p.image.load ("dobbelsteen.png")
 dobbelsteen=p.transform.scale(dobbelsteen, (50,50))
-
+dobbelsteenachtergrond=p.image.load ("dobbelspel achtergrond.png")
 dobbelsteen_x=161
 dobbelsteen_y=245
 player_x = 100
@@ -43,13 +43,11 @@ while running == True:
         player_y -= player_speed
     if keys[p.K_DOWN] and player_y<550 : 
         player_y += player_speed
-    if player.get_rect(topleft=(player_x, player_y)).colliderect(dobbelsteen.get_rect(topleft=(dobbelsteen_x, dobbelsteen_y))):
-        screen.blit(font.render("Druk E om te spelen", True, (255,255,0)), (300, 260))
-        screen.blit(text,(100,100))
-        if keys[p.K_e]:
-            game_state = "dice"
+    colliding = player.get_rect(topleft=(player_x, player_y)).colliderect(dobbelsteen.get_rect(topleft=(dobbelsteen_x, dobbelsteen_y)))
+    if colliding and keys[p.K_e]:
+        game_state = "dice"
     while game_state == "dice":
-        screen.fill((0, 0, 0))
+        screen.blit(dobbelsteenachtergrond, (0, 0))
         screen.blit(font.render("Je hebt gedobbeld!", True, (255,255,255)), (200, 200))
         p.display.flip()
         time.sleep(2)
@@ -57,6 +55,10 @@ while running == True:
     screen.blit(platform, (0, 0))
     screen.blit(dobbelsteen, (dobbelsteen_x,dobbelsteen_y))
     screen.blit(player, (player_x,player_y))
+    # draw interaction prompts last so they appear on top
+    if colliding:
+        screen.blit(font.render("Druk E om te spelen", True, (255,255,0)), (300, 260))
+        screen.blit(text,(100,100))
 
 
     for event in p.event.get():
