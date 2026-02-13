@@ -19,6 +19,10 @@ dobbelsteen=p.image.load ("dobbelsteen.png")
 dobbelsteen=p.transform.scale(dobbelsteen, (50,50))
 dobbelsteenachtergrond=p.image.load ("dobbelspel achtergrond.png")
 dobbelsteenachtergrond=p.transform.scale(dobbelsteenachtergrond, (736,600))
+muntje=p.image.load ("muntje.png")
+muntje=p.transform.scale(muntje, (40,40))
+muntje_x=625
+muntje_y=50
 dobbelsteen_x=161
 dobbelsteen_y=245
 player_x = 100
@@ -30,7 +34,7 @@ player = p.image.load("download.png")
 player = p.transform.scale(player, (50,50))
 font = p.font.SysFont(None, 36)
 text = font.render("Welkom", True, (255,255,255))
-
+geld_rechtsboven = font.render(f"{geld}", True, (255,255,255))
 # Main loop
 running = True
 clock = p.time.Clock()
@@ -88,11 +92,13 @@ while running == True:
 
     screen.blit(platform, (0, 0))
     screen.blit(dobbelsteen, (dobbelsteen_x,dobbelsteen_y))
+    screen.blit(muntje, (muntje_x,muntje_y))
+    screen.blit(geld_rechtsboven, (665, 58))
     screen.blit(player, (player_x,player_y))
     # draw interaction prompts last so they appear on top
     if collidingdobbel:
         screen.blit(font.render("Druk E om te spelen", True, (255,255,0)), (300, 260))
-        screen.blit(text,(100,100))
+        
 
 
     for event in p.event.get():
