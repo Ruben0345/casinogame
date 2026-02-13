@@ -16,7 +16,9 @@ p.mixer.music.play(-1)
 # Load image
 platform = p.image.load ("Tokyo Ghoul.png")
 dobbelsteen=p.image.load ("dobbelsteen.png")
+Shop=p.image.load ("Shop.png")
 dobbelsteen=p.transform.scale(dobbelsteen, (50,50))
+Shop=p.transform.scale(Shop, (100,100))
 dobbelsteenachtergrond=p.image.load ("dobbelspel achtergrond.png")
 dobbelsteenachtergrond=p.transform.scale(dobbelsteenachtergrond, (736,600))
 muntje=p.image.load ("muntje.png")
@@ -25,6 +27,8 @@ muntje_x=625
 muntje_y=50
 dobbelsteen_x=161
 dobbelsteen_y=245
+Shop_x = 610
+Shop_y = 510
 player_x = 100
 player_y = 100
 player_speed = 4
@@ -91,6 +95,7 @@ while running == True:
 
     screen.blit(platform, (0, 0))
     screen.blit(dobbelsteen, (dobbelsteen_x,dobbelsteen_y))
+    screen.blit(Shop, (Shop_x, Shop_y))
     screen.blit(muntje, (muntje_x,muntje_y))
     screen.blit(geld_rechtsboven, (665, 58))
     screen.blit(player, (player_x,player_y))
