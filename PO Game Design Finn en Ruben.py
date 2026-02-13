@@ -21,6 +21,8 @@ dobbelsteen=p.transform.scale(dobbelsteen, (50,50))
 Shop=p.transform.scale(Shop, (100,100))
 dobbelsteenachtergrond=p.image.load ("dobbelspel achtergrond.png")
 dobbelsteenachtergrond=p.transform.scale(dobbelsteenachtergrond, (736,600))
+Shop_achtergrond=p.image.load ("Shop int.png")
+Shop_achtergrond=p.transform.scale(Shop_achtergrond, (736,600))
 muntje=p.image.load ("muntje.png")
 muntje=p.transform.scale(muntje, (40,40))
 muntje_x=625
@@ -57,7 +59,13 @@ while running == True:
     collidingdobbel = player.get_rect(topleft=(player_x, player_y)).colliderect(dobbelsteen.get_rect(topleft=(dobbelsteen_x, dobbelsteen_y)))
     if collidingdobbel and keys[p.K_e]:
         game_state = "dice"
+    collidingshop = player.get_rect(topleft=(player_x, player_y)).colliderect(Shop.get_rect(topleft=(Shop_x, Shop_y)))
+    if collidingshop and keys[p.K_e]:
+        game_state = "shop"
     
+    
+
+
     while game_state == "dice":
         screen.blit(dobbelsteenachtergrond, (0, 0))
         screen.blit(font.render("kies hoeveel je wilt inzetten!", True, (255,255,255)), (200, 100))
@@ -91,6 +99,8 @@ while running == True:
             time.sleep(3)
         p.display.flip()
         game_state = "main"
+    while game_state == "shop":
+        screen.blit(dobbelsteenachtergrond, (0, 0))
 
 
     screen.blit(platform, (0, 0))
@@ -104,7 +114,8 @@ while running == True:
 
     if collidingdobbel:
         screen.blit(font.render("Druk E om te spelen", True, (255,255,0)), (20, 60))
-        
+    if collidingshop:
+        screen.blit(font.render("Druk E om te openen", True, (255,255,0)), (20, 60))
 
 
     for event in p.event.get():
