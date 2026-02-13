@@ -33,11 +33,12 @@ walk_frame = 0
 player = p.image.load("download.png")
 player = p.transform.scale(player, (50,50))
 font = p.font.SysFont(None, 36)
-text = font.render("Welkom", True, (255,255,255))
+text = font.render("Welkom, loop naar een spel om het te spelen!", True, (255,255,255))
 geld_rechtsboven = font.render(f"{geld}", True, (255,255,255))
 # Main loop
 running = True
 clock = p.time.Clock()
+text_show_until = time.time() + 3 
 while running == True:
     game_state = "main"
     keys = p.key.get_pressed() 
@@ -68,7 +69,6 @@ while running == True:
         if bet > geld:
             screen.blit(font.render("Je hebt niet genoeg geld!", True, (255,0,0)), (200, 300))
             p.display.flip()
-            time.sleep(2)
             continue
         screen.blit(font.render("op welk cijfer wil je inzetten? druk 1 t/m 6", True, (255,255,255)), (200, 100))
         if keys[p.K_1]: choice = 1 
@@ -80,8 +80,7 @@ while running == True:
         roll = random.randint(1,6) 
         if roll == choice: 
             geld += bet * 5 
-            screen.blit(font.render(f"Je hebt gewonnen! Het cijfer was {roll}", True, (0,255,0)), (200, 300))
-            time.sleep(3) 
+            screen.blit(font.render(f"Je hebt gewonnen! Het cijfer was {roll}", True, (0,255,0)), (200, 300)) 
         else: 
             geld -= bet 
             screen.blit(font.render(f"Je hebt verloren! Het cijfer was {roll}", True, (255,0,0)), (200, 300))
@@ -95,9 +94,11 @@ while running == True:
     screen.blit(muntje, (muntje_x,muntje_y))
     screen.blit(geld_rechtsboven, (665, 58))
     screen.blit(player, (player_x,player_y))
-    # draw interaction prompts last so they appear on top
+    if time.time() < text_show_until:
+        screen.blit(text, (20, 20))
+
     if collidingdobbel:
-        screen.blit(font.render("Druk E om te spelen", True, (255,255,0)), (300, 260))
+        screen.blit(font.render("Druk E om te spelen", True, (255,255,0)), (20, 60))
         
 
 
@@ -106,6 +107,5 @@ while running == True:
             running = False
     p.display.flip()
     clock.tick(60)
-
 
 p.quit()
