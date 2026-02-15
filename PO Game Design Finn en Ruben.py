@@ -3,16 +3,18 @@ import time
 import random
 
 p.init()
-geld = 1000
+dobbelspel_status = "bet"
+gegooid = False
 bet = 0
 choice = 0
+geld = 1000
 screen = p.display.set_mode((736, 600))
 p.display.set_caption("casino basis")
 p.mixer.init()
 p.mixer.music.load("audio.mp3")
 p.mixer.music.play(-1)
 
-
+game_state = "main"
 # Load image
 platform = p.image.load ("Tokyo Ghoul.png")
 dobbelsteen=p.image.load ("dobbelsteen.png")
@@ -46,7 +48,6 @@ running = True
 clock = p.time.Clock()
 text_show_until = time.time() + 3 
 while running == True:
-    game_state = "main"
     keys = p.key.get_pressed() 
     if keys[p.K_LEFT] and player_x>0: 
         player_x -= player_speed
@@ -67,41 +68,73 @@ while running == True:
 
 
     while game_state == "dice":
+        keys = p.key.get_pressed()
         screen.blit(dobbelsteenachtergrond, (0, 0))
-        screen.blit(font.render("kies hoeveel je wilt inzetten!", True, (255,255,255)), (200, 100))
-        screen.blit(font.render("druk '1' voor 10", True, (255,255,255)), (300, 140))
-        screen.blit(font.render("druk '2' voor 20", True, (255,255,255)), (300, 180))
-        screen.blit(font.render("druk '3' voor 50", True, (255,255,255)), (300, 220))
-        if keys[p.K_1]:
-            bet = 10
-        if keys[p.K_2]:
-            bet = 20
-        if keys[p.K_3]:
-            bet = 50
-        if bet > geld:
-            screen.blit(font.render("Je hebt niet genoeg geld!", True, (255,0,0)), (200, 300))
-            p.display.flip()
-            continue
-        screen.blit(font.render("op welk cijfer wil je inzetten? druk 1 t/m 6", True, (255,255,255)), (200, 100))
-        if keys[p.K_1]: choice = 1 
-        if keys[p.K_2]: choice = 2 
-        if keys[p.K_3]: choice = 3 
-        if keys[p.K_4]: choice = 4 
-        if keys[p.K_5]: choice = 5 
-        if keys[p.K_6]: choice = 6 
-        roll = random.randint(1,6) 
-        if roll == choice: 
-            geld += bet * 5 
-            screen.blit(font.render(f"Je hebt gewonnen! Het cijfer was {roll}", True, (0,255,0)), (200, 300)) 
-        else: 
-            geld -= bet 
-            screen.blit(font.render(f"Je hebt verloren! Het cijfer was {roll}", True, (255,0,0)), (200, 300))
-            time.sleep(3)
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                running = False
+        if dobbelspel_status == "bet":    
+            screen.blit(font.render("kies hoeveel je wilt inzetten!", True, (255,255,255)), (200, 100))
+            screen.blit(font.render("druk 'Z' voor 10", True, (255,255,255)), (300, 140))
+            screen.blit(font.render("druk 'X' voor 20", True, (255,255,255)), (300, 180))
+            screen.blit(font.render("druk 'C' voor 50", True, (255,255,255)), (300, 220))
+            if keys[p.K_z]:
+                bet = 10
+                dobbelspel_status = "choice"
+            if keys[p.K_x]:
+                bet = 20
+                dobbelspel_status = "choice"
+            if keys[p.K_c]:
+                bet = 50
+                dobbelspel_status = "choice"
+            if bet > geld:
+                screen.blit(font.render("Je hebt niet genoeg geld!", True, (255,0,0)), (200, 300))
+                bet = 0
+                time.sleep(4)
+                p.display.flip()
+                game_state = "main"
+            
+        elif dobbelspel_status == "choice":
+            screen.blit(font.render("op welk cijfer wil je inzetten? druk 1 t/m 6", True, (255,255,255)), (200, 100))
+            if keys[p.K_1]: choice = 1 
+            if keys[p.K_2]: choice = 2 
+            if keys[p.K_3]: choice = 3 
+            if keys[p.K_4]: choice = 4 
+            if keys[p.K_5]: choice = 5 
+            if keys[p.K_6]: choice = 6 
+            if choice != 0:
+                dobbelspel_status = "result"
+        elif dobbelspel_status == "result":
+            if not gegooid:
+                roll = random.randint(1,6)
+                gegooid = True 
+            if roll == choice: 
+                geld += bet * 5 
+                screen.blit(font.render(f"Je hebt gewonnen! Het cijfer was {roll}", True, (0,255,0)), (200, 300)) 
+            else: 
+                geld -= bet 
+                screen.blit(font.render(f"Je hebt verloren! Het cijfer was {roll}", True, (255,0,0)), (200, 300))
+            screen.blit(font.render("Druk ESC om terug te gaan naar de map", True, (255,255,255)), (200, 100))
+            screen.blit(font.render("Druk ENTER om opnieuw te spelen", True, (255,255,255)), (200, 140))
+        if keys[p.K_RETURN]:
+            bet = 0
+            choice = 0
+            gegooid = False
+            dobbelspel_status = "bet"
+        if keys[p.K_ESCAPE]:
+            bet = 0
+            choice = 0
+            gegooid = False
+            dobbelspel_status = "bet"
+            game_state = "main"
+        p.display.flip()
+        clock.tick(60)
+    
+    if game_state == "shop":
+        screen.blit(Shop_achtergrond, (0, 0))
+        time.sleep(3)
         p.display.flip()
         game_state = "main"
-    while game_state == "shop":
-        screen.blit(dobbelsteenachtergrond, (0, 0))
-
 
     screen.blit(platform, (0, 0))
     screen.blit(dobbelsteen, (dobbelsteen_x,dobbelsteen_y))
