@@ -4,7 +4,9 @@ import random
 
 p.init()
 dobbelspel_status = "bet"
+gewonnen_dobbelspel = False
 gegooid = False
+uitbetaald = False
 bet = 0
 choice = 0
 geld = 1000
@@ -42,7 +44,7 @@ player = p.image.load("download.png")
 player = p.transform.scale(player, (50,50))
 font = p.font.SysFont(None, 36)
 text = font.render("Welkom, loop naar een spel om het te spelen!", True, (255,255,255))
-geld_rechtsboven = font.render(f"{geld}", True, (255,255,255))
+
 # Main loop
 running = True
 clock = p.time.Clock()
@@ -108,38 +110,60 @@ while running == True:
             if not gegooid:
                 roll = random.randint(1,6)
                 gegooid = True 
-            if roll == choice: 
-                geld += bet * 5 
-                screen.blit(font.render(f"Je hebt gewonnen! Het cijfer was {roll}", True, (0,255,0)), (200, 300)) 
-            else: 
-                geld -= bet 
-                screen.blit(font.render(f"Je hebt verloren! Het cijfer was {roll}", True, (255,0,0)), (200, 300))
+            elif not uitbetaald:
+                if roll == choice:
+                    gewonnen_dobbelspel = True 
+                    geld += bet * 5
+                else:
+                    geld -= bet
+                    gewonnen_dobbelspel = False
+                uitbetaald = True
+            if gewonnen_dobbelspel:
+                screen.blit(font.render(f"Je hebt gewonnen! Het cijfer was {roll}", True, (0,255,0)), (200, 300))
+            elif not gewonnen_dobbelspel:
+               screen.blit(font.render(f"Je hebt verloren! Het cijfer was {roll}", True, (255,0,0)), (200, 300)) 
             screen.blit(font.render("Druk ESC om terug te gaan naar de map", True, (255,255,255)), (200, 100))
             screen.blit(font.render("Druk ENTER om opnieuw te spelen", True, (255,255,255)), (200, 140))
-        if keys[p.K_RETURN]:
-            bet = 0
-            choice = 0
-            gegooid = False
-            dobbelspel_status = "bet"
-        if keys[p.K_ESCAPE]:
-            bet = 0
-            choice = 0
-            gegooid = False
-            dobbelspel_status = "bet"
-            game_state = "main"
+
+            if keys[p.K_RETURN]:
+                    result_time = p.time.get_ticks()
+                    bet = 0
+                    gewonnen_dobbelspel = False
+                    choice = 0
+                    gegooid = False
+                    uitbetaald = False
+                    dobbelspel_status = "bet"
+            if keys[p.K_ESCAPE]:
+                    bet = 0
+                    gewonnen_dobbelspel = True
+                    choice = 0
+                    gegooid = False
+                    uitbetaald = False
+                    dobbelspel_status = "bet"
+                    game_state = "main"
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                running = False
         p.display.flip()
         clock.tick(60)
     
-    if game_state == "shop":
+    while game_state == "shop":
+        keys = p.key.get_pressed()
         screen.blit(Shop_achtergrond, (0, 0))
-        time.sleep(3)
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                running = False
+        screen.blit(font.render("Druk ESC om terug te gaan naar de map", True, (255,255,255)), (200, 100))
+        if keys[p.K_ESCAPE]:
+            game_state = "main"
         p.display.flip()
-        game_state = "main"
+        clock.tick(60)
 
     screen.blit(platform, (0, 0))
     screen.blit(dobbelsteen, (dobbelsteen_x,dobbelsteen_y))
     screen.blit(Shop, (Shop_x, Shop_y))
     screen.blit(muntje, (muntje_x,muntje_y))
+    geld_rechtsboven = font.render(str(geld), True, (255,255,255))
     screen.blit(geld_rechtsboven, (665, 58))
     screen.blit(player, (player_x,player_y))
     if time.time() < text_show_until:
