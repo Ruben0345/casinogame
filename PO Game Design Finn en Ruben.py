@@ -4,11 +4,15 @@ import random
 
 p.init()
 dobbelspel_status = "bet"
+Shop_status = "choice"
 gewonnen_dobbelspel = False
 gegooid = False
 uitbetaald = False
 bet = 0
+Kost_Box = 0
 choice = 0
+LuckyBox_G = 0
+LuckyBox_R = 0
 geld = 1000
 screen = p.display.set_mode((736, 600))
 p.display.set_caption("casino basis")
@@ -27,6 +31,10 @@ dobbelsteenachtergrond=p.image.load ("dobbelspel achtergrond.png")
 dobbelsteenachtergrond=p.transform.scale(dobbelsteenachtergrond, (736,600))
 Shop_achtergrond=p.image.load ("Shop int.png")
 Shop_achtergrond=p.transform.scale(Shop_achtergrond, (736,600))
+Shop_achtergrond_G=p.image.load ("Shop int_G.png")
+Shop_achtergrond_G=p.transform.scale(Shop_achtergrond_G, (736,600))
+Shop_achtergrond_R=p.image.load ("Shop int_R.png")
+Shop_achtergrond_R=p.transform.scale(Shop_achtergrond_R, (736,600))
 muntje=p.image.load ("muntje.png")
 muntje=p.transform.scale(muntje, (40,40))
 muntje_x=625
@@ -153,9 +161,42 @@ while running == True:
         for event in p.event.get():
             if event.type == p.QUIT:
                 running = False
-        screen.blit(font.render("Druk ESC om terug te gaan naar de map", True, (255,255,255)), (200, 100))
-        if keys[p.K_ESCAPE]:
-            game_state = "main"
+        if Shop_status == "choice":    
+            screen.blit(font.render("Je kan tussen twee Lucky boxes kiezen", True, (255,255,255)), (150, 10))
+            screen.blit(font.render("Voor een een goude van €500 druk 1", True, (255,255,255)), (150, 50))
+            screen.blit(font.render("En voor een een regenboog van €1000 druk 2", True, (255,255,255)), (150, 90))
+            if keys[p.K_1]:
+                Kost_Box = 500
+                Shop_status = "recieved_G"
+            if keys[p.K_2]:
+                Kost_Box = 1000
+                Shop_status = "recieved_R"
+            if Kost_Box > geld:
+                screen.blit(font.render("Je hebt niet genoeg geld!", True, (255,0,0)), (150, 40))
+                Kost_Box = 0
+                time.sleep(4)
+                p.display.flip()
+                game_state = "main"
+        elif Shop_status == "recieved_G":
+            screen.blit(Shop_achtergrond_G, (0, 0))
+            screen.blit(font.render("Een Goude Lucky Box zit nu in je inventory", True, (255,255,255)), (150, 40))
+            screen.blit(font.render("Klik op enter om door te gaan", True, (255,255,255)), (150, 80))
+            LuckyBox_G = LuckyBox_G + 1
+            if keys[p.K_RETURN]:
+                Shop_status = "exit" 
+
+        elif Shop_status == "recieved_R":
+            screen.blit(Shop_achtergrond_R, (0, 0))
+            screen.blit(font.render("Een Regenboog Lucky Box zit nu in je inventory", True, (255,255,255)), (150, 40))
+            screen.blit(font.render("Klik op enter om door te gaan", True, (255,255,255)), (150, 80))
+            LuckyBox_G = LuckyBox_G + 1
+            if keys[p.K_RETURN]:
+                Shop_status = "exit"
+
+        elif Shop_status == "exit":
+            screen.blit(font.render("Druk ESC om terug te gaan naar de map", True, (255,255,255)), (150, 40))
+            if keys[p.K_ESCAPE]:
+                game_state = "main"
         p.display.flip()
         clock.tick(60)
 
