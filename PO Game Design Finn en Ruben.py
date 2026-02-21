@@ -2,9 +2,11 @@ import pygame as p
 import time
 import random
 
+#variabelen, gamestates en muziek hieronder
 p.init()
 dobbelspel_status = "bet"
 Shop_status = "choice"
+coinflip_status = "bet"
 gewonnen_dobbelspel = False
 gegooid = False
 uitbetaald = False
@@ -19,9 +21,9 @@ p.display.set_caption("casino basis")
 p.mixer.init()
 p.mixer.music.load("audio.mp3")
 p.mixer.music.play(-1)
-
 game_state = "main"
-# Load image
+
+# foto's enzo hieronder
 platform = p.image.load ("Tokyo Ghoul.png")
 dobbelsteen=p.image.load ("dobbelsteen.png")
 Shop=p.image.load ("Shop.png")
@@ -39,6 +41,16 @@ muntje=p.image.load ("muntje.png")
 muntje=p.transform.scale(muntje, (40,40))
 muntje_x=625
 muntje_y=50
+coinflipA=p.image.load("coinflip.png")
+coinflipA=p.transform.scale(coinflipA, (50,50))
+coinflipA_x=227
+coinflipA_y=435
+coinflipscherm=p.image.load("coinflipscherm.png")
+coinflipscherm=p.transform.scale(coinflipscherm, (736,600))
+coinflipkop=p.image.load("coinflip kop.png")
+coinflipkop=p.transform.scale(coinflipkop, (736,600))
+coinflipmunt=p.image.load("coinflip munt.png")
+coinflipmunt=p.transform.scale(coinflipmunt, (736,600))
 dobbelsteen_x=161
 dobbelsteen_y=245
 Shop_x = 610
@@ -53,7 +65,7 @@ player = p.transform.scale(player, (50,50))
 font = p.font.SysFont(None, 36)
 text = font.render("Welkom, loop naar een spel om het te spelen!", True, (255,255,255))
 
-# Main loop
+# main loop hieronder
 running = True
 clock = p.time.Clock()
 text_show_until = time.time() + 3 
@@ -73,10 +85,111 @@ while running == True:
     collidingshop = player.get_rect(topleft=(player_x, player_y)).colliderect(Shop.get_rect(topleft=(Shop_x, Shop_y)))
     if collidingshop and keys[p.K_e]:
         game_state = "shop"
-    
-    
+    collidngcoinflip = player.get_rect(topleft=(player_x, player_y)).colliderect(coinflipA.get_rect(topleft=(coinflipA_x, coinflipA_y)))
+    if collidngcoinflip and keys[p.K_e]:
+        game_state = "coinflip"
 
+    while game_state == "coinflip":
+        keys = p.key.get_pressed()
+        screen.blit(coinflipscherm, (0, 0))
+        if coinflip_status == "bet":
+            screen.blit(font.render("kies hoeveel je wilt inzetten!", True, (255,255,0)), (200, 100))
+            screen.blit(font.render("druk 'Z' voor 10", True, (255,255,0)), (300, 140))
+            screen.blit(font.render("druk 'X' voor 20", True, (255,255,0)), (300, 180))
+            screen.blit(font.render("druk 'C' voor 50", True, (255,255,0)), (300, 220))
+            if keys[p.K_z]:
+                bet = 10
+            if keys[p.K_x]:
+                bet = 20
+            if keys[p.K_c]:
+                bet = 50
+            elif bet > geld:
+                screen.blit(font.render("Je hebt niet genoeg geld!", True, (255,0,0)), (200, 300))
+                bet = 0
+                coinflip_status = "bet"
+                time.sleep(4)
+                p.display.flip()
+                game_state = "main"
+            elif bet<= geld and bet != 0:
+                coinflip_status = "choice"
+        elif coinflip_status == "choice":
+            screen.blit(font.render("kies kop of munt! druk K voor kop en M voor munt", True, (255,255,0)), (200, 100))
+            if keys[p.K_k]: choice = "kop" 
+            if keys[p.K_m]: choice = "munt" 
+            if choice != 0:
+                coinflip_status = "result"
+        elif coinflip_status == "result":
+            if not gegooid:
+                flip = random.choice(["kop", "munt"])
+                gegooid = True
+            if flip == "kop":
+                coinflip_status = "result_kop"
+            if flip == "munt":
+                coinflip_status = "result_munt"
+        elif coinflip_status == "result_kop":
+            screen.blit(coinflipkop, (0, 0))
+            if choice == "kop":
+                screen.blit(font.render("Je hebt gewonnen!", True, (0,255,0)), (200, 300))
+                if not uitbetaald:
+                    geld += bet
+                    uitbetaald = True
+            else:
+                screen.blit(font.render("Je hebt verloren!", True, (255,0,0)), (200, 300)) 
+                if not uitbetaald:
+                    geld -= bet
+                    uitbetaald = True
+            screen.blit(font.render("Druk ESC om terug te gaan naar de map", True, (255,255,255)), (200, 100))
+            screen.blit(font.render("Druk ENTER om opnieuw te spelen", True, (255,255,255)), (200, 140))
 
+            if keys[p.K_RETURN]:
+                    result_time = p.time.get_ticks()
+                    bet = 0
+                    choice = 0
+                    gegooid = False
+                    uitbetaald = False
+                    coinflip_status = "bet"
+            if keys[p.K_ESCAPE]:
+                    bet = 0
+                    choice = 0
+                    gegooid = False
+                    uitbetaald = False
+                    coinflip_status = "bet"
+                    game_state = "main"
+        elif coinflip_status == "result_munt":
+            screen.blit(coinflipmunt, (0, 0))
+            if choice == "munt":
+                screen.blit(font.render("Je hebt gewonnen!", True, (0,255,0)), (200, 300))
+                if not uitbetaald:
+                    uitbetaald = True
+                    geld += bet
+                    uitbetaald = True
+            else:
+                screen.blit(font.render("Je hebt verloren!", True, (255,0,0)), (200, 300)) 
+                if not uitbetaald:
+                    geld -= bet
+                    uitbetaald = True
+            screen.blit(font.render("Druk ESC om terug te gaan naar de map", True, (255,255,255)), (200, 100))
+            screen.blit(font.render("Druk ENTER om opnieuw te spelen", True, (255,255,255)), (200, 140))
+
+            if keys[p.K_RETURN]:
+                    result_time = p.time.get_ticks()
+                    bet = 0
+                    choice = 0
+                    gegooid = False
+                    uitbetaald = False
+                    coinflip_status = "bet"
+            if keys[p.K_ESCAPE]:
+                    bet = 0
+                    choice = 0
+                    gegooid = False
+                    uitbetaald = False
+                    coinflip_status = "bet"
+                    game_state = "main"
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                running = False
+        p.display.flip()
+        clock.tick(60)
     while game_state == "dice":
         keys = p.key.get_pressed()
         screen.blit(dobbelsteenachtergrond, (0, 0))
@@ -90,20 +203,19 @@ while running == True:
             screen.blit(font.render("druk 'C' voor 50", True, (255,255,255)), (300, 220))
             if keys[p.K_z]:
                 bet = 10
-                dobbelspel_status = "choice"
             if keys[p.K_x]:
                 bet = 20
-                dobbelspel_status = "choice"
             if keys[p.K_c]:
                 bet = 50
-                dobbelspel_status = "choice"
-            if bet > geld:
+            elif bet > geld:
                 screen.blit(font.render("Je hebt niet genoeg geld!", True, (255,0,0)), (200, 300))
                 bet = 0
+                dobbelspel_status = "bet"
                 time.sleep(4)
                 p.display.flip()
                 game_state = "main"
-            
+            elif bet<= geld and bet != 0:
+                dobbelspel_status = "choice"
         elif dobbelspel_status == "choice":
             screen.blit(font.render("op welk cijfer wil je inzetten? druk 1 t/m 6", True, (255,255,255)), (200, 100))
             if keys[p.K_1]: choice = 1 
@@ -204,6 +316,7 @@ while running == True:
     screen.blit(dobbelsteen, (dobbelsteen_x,dobbelsteen_y))
     screen.blit(Shop, (Shop_x, Shop_y))
     screen.blit(muntje, (muntje_x,muntje_y))
+    screen.blit(coinflipA, (coinflipA_x, coinflipA_y))
     geld_rechtsboven = font.render(str(geld), True, (255,255,255))
     screen.blit(geld_rechtsboven, (665, 58))
     screen.blit(player, (player_x,player_y))
@@ -214,7 +327,8 @@ while running == True:
         screen.blit(font.render("Druk E om te spelen", True, (255,255,0)), (20, 60))
     if collidingshop:
         screen.blit(font.render("Druk E om te openen", True, (255,255,0)), (20, 60))
-
+    if collidngcoinflip:
+        screen.blit(font.render("Druk E om te spelen", True, (255,255,0)), (20, 60))
 
     for event in p.event.get():
         if event.type == p.QUIT:
