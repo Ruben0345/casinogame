@@ -10,6 +10,7 @@ coinflip_status = "bet"
 gewonnen_dobbelspel = False
 gegooid = False
 uitbetaald = False
+shop_betaald = False
 bet = 0
 Kost_Box = 0
 choice = 0
@@ -293,17 +294,25 @@ while running == True:
             screen.blit(Shop_achtergrond_G, (0, 0))
             screen.blit(font.render("Een Goude Lucky Box zit nu in je inventory", True, (255,255,255)), (150, 40))
             screen.blit(font.render("Klik op enter om door te gaan", True, (255,255,255)), (150, 80))
-            LuckyBox_G = LuckyBox_G + 1
+            if not shop_betaald:
+                LuckyBox_G += 1
+                geld -= 500
+                shop_betaald = True
             if keys[p.K_RETURN]:
+                shop_betaald = False
                 Shop_status = "exit" 
 
         elif Shop_status == "recieved_R":
             screen.blit(Shop_achtergrond_R, (0, 0))
             screen.blit(font.render("Een Regenboog Lucky Box zit nu in je inventory", True, (255,255,255)), (150, 40))
             screen.blit(font.render("Klik op enter om door te gaan", True, (255,255,255)), (150, 80))
-            LuckyBox_G = LuckyBox_G + 1
+            if not shop_betaald:
+                LuckyBox_R += 1
+                geld -= 500
+                shop_betaald = True
             if keys[p.K_RETURN]:
-                Shop_status = "exit"
+                shop_betaald = False
+                Shop_status = "exit" 
 
         elif Shop_status == "exit":
             screen.blit(font.render("Druk ESC om terug te gaan naar de map", True, (255,255,255)), (150, 40))
