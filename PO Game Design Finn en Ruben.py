@@ -42,6 +42,7 @@ Shop_achtergrond_R=p.image.load ("Shop int_R.png")
 Shop_achtergrond_R=p.transform.scale(Shop_achtergrond_R, (736,600))
 gBox = p.image.load("LB_G.png")
 rBox = p.image.load("LB_R.png")
+Placeholder = p.image.load("Place holder.png")
 muntje=p.image.load ("muntje.png")
 muntje=p.transform.scale(muntje, (40,40))
 muntje_x=625
@@ -197,6 +198,7 @@ while running == True:
                 running = False
         p.display.flip()
         clock.tick(60)
+
     while game_state == "dice":
         keys = p.key.get_pressed()
         screen.blit(dobbelsteenachtergrond, (0, 0))
@@ -273,6 +275,7 @@ while running == True:
                 running = False
         p.display.flip()
         clock.tick(60)
+        
     while game_state == "inventory":
 
         for event in p.event.get():
@@ -280,26 +283,36 @@ while running == True:
                 running = False
 
         keys = p.key.get_pressed()
-
+        
         screen.fill((30,30,30))
 
         title = font.render("Inventory", True, (255,255,255))
         screen.blit(title, (300,50))
 
-        screen.blit(gBox, (200,200))
-        screen.blit(rBox, (350,200))
-        screen.blit(font.render(str(inventory["LuckyBox_G"]), True, (255,255,255)), (210,260))
-        screen.blit(font.render(str(inventory["LuckyBox_R"]), True, (255,255,255)), (310,260))
+        screen.blit(gBox, (-50,-50))
+        screen.blit(rBox, (150,-50))
+        screen.blit(font.render(str(inventory["LuckyBox_G"]), True, (255,255,255)), (250,250))
+        screen.blit(font.render(str(inventory["LuckyBox_R"]), True, (255,255,255)), (450,250))
 
-        exit_text = font.render("Druk ESC om te sluiten", True, (255,255,255))
-        screen.blit(exit_text, (230,400))
+        Open_G = font.render("Durk op G om een Gouden Lucky Box te openen", True, (255,255,255))
+        Open_R = font.render("Durk op R om een Regenboog Lucky Box te openen", True, (255,255,255))
+        screen.blit(Open_G,(80, 300))
+        screen.blit(Open_R,(60, 400))
+        exit_text = font.render("Of druk ESC om te sluiten", True, (255,255,255))
+        screen.blit(exit_text, (230,500))
 
+        if keys[p.K_g] and (inventory["LuckyBox_G"]) > 0:
+            game_state = "op_G"
+        if keys[p.K_r] and (inventory["LuckyBox_R"]) > 0:
+            game_state = "op_R"
         if keys[p.K_ESCAPE]:
             game_state = "main"
 
         p.display.flip()
         clock.tick(60) 
+
     while game_state == "shop":
+
         keys = p.key.get_pressed()
         screen.blit(Shop_achtergrond, (0, 0))
         for event in p.event.get():
@@ -351,6 +364,33 @@ while running == True:
                 game_state = "main"
         p.display.flip()
         clock.tick(60)
+
+    while game_state == "op_G":
+        keys = p.key.get_pressed()
+        screen.blit(Placeholder, (0, 0))
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                running = False
+        
+        if keys[p.K_ESCAPE]:
+            game_state = "main"
+
+        p.display.flip()
+        clock.tick(60)
+
+    while game_state == "op_R":
+        keys = p.key.get_pressed()
+        screen.blit(Placeholder, (0, 0))
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                running = False
+        
+        if keys[p.K_ESCAPE]:
+            game_state = "main"
+
+        p.display.flip()
+        clock.tick(60)
+        
 
     screen.blit(platform, (0, 0))
     screen.blit(dobbelsteen, (dobbelsteen_x,dobbelsteen_y))
