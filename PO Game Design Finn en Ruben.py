@@ -25,7 +25,14 @@ p.mixer.init()
 p.mixer.music.load("audio.mp3")
 p.mixer.music.play(-1)
 game_state = "main"
-
+roulette_status = "bet"
+roulette_bet = 0
+roulette_choice = None
+roulette_result = None
+roulette_spinning = False
+roulette_angle = 0
+roulette_speed = 0
+roulette_uitbetaald = False
 # foto's enzo hieronder
 platform = p.image.load ("Tokyo Ghoul.png")
 dobbelsteen=p.image.load ("dobbelsteen.png")
@@ -57,6 +64,12 @@ coinflipkop=p.image.load("coinflip kop.png")
 coinflipkop=p.transform.scale(coinflipkop, (736,600))
 coinflipmunt=p.image.load("coinflip munt.png")
 coinflipmunt=p.transform.scale(coinflipmunt, (736,600))
+rouletteplatform=p.image.load("roulette platform.png")
+rouletteplatform=p.transform.scale(rouletteplatform, (50,50))
+rouletteplatform_x=467
+rouletteachtergrond=p.image.load("roulette achtergrond.png")
+rouletteachtergrond=p.transform.scale(rouletteachtergrond, (736,600))
+rouletteplatform_y=267
 dobbelsteen_x=161
 dobbelsteen_y=245
 Shop_x = 610
@@ -96,7 +109,29 @@ while running == True:
         game_state = "coinflip"
     if keys[p.K_i]:
         game_state = "inventory"
+    collidingroulette = player.get_rect(topleft=(player_x, player_y)).colliderect(rouletteplatform.get_rect(topleft=(rouletteplatform_x, rouletteplatform_y)))
+    if collidingroulette and keys[p.K_e]:
+        game_state = "roulette"
 
+    while game_state == "roulette":
+        keys = p.key.get_pressed()
+        screen.blit(rouletteachtergrond, (0, 0))
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                running = False
+        if keys[p.K_ESCAPE]:
+            game_state = "main"
+        p.display.flip()
+        clock.tick(60)
     while game_state == "coinflip":
         keys = p.key.get_pressed()
         screen.blit(coinflipscherm, (0, 0))
@@ -396,13 +431,15 @@ while running == True:
     screen.blit(dobbelsteen, (dobbelsteen_x,dobbelsteen_y))
     screen.blit(Shop, (Shop_x, Shop_y))
     screen.blit(muntje, (muntje_x,muntje_y))
+    screen.blit(rouletteplatform, (rouletteplatform_x, rouletteplatform_y)) 
     screen.blit(coinflipA, (coinflipA_x, coinflipA_y))
     geld_rechtsboven = font.render(str(geld), True, (255,255,255))
     screen.blit(geld_rechtsboven, (665, 58))
     screen.blit(player, (player_x,player_y))
     if time.time() < text_show_until:
         screen.blit(text, (20, 20))
-
+    if collidingroulette:
+        screen.blit(font.render("Druk E om te spelen", True, (255,255,0)), (20, 60))
     if collidingdobbel:
         screen.blit(font.render("Druk E om te spelen", True, (255,255,0)), (20, 60))
     if collidingshop:
