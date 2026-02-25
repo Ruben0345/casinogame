@@ -10,11 +10,14 @@ coinflip_status = "bet"
 gewonnen_dobbelspel = False
 gegooid = False
 uitbetaald = False
+shop_betaald = False
 bet = 0
 Kost_Box = 0
 choice = 0
-LuckyBox_G = 0
-LuckyBox_R = 0
+inventory = {
+    "LuckyBox_G": 0,
+    "LuckyBox_R": 0
+}
 geld = 1000
 screen = p.display.set_mode((736, 600))
 p.display.set_caption("casino basis")
@@ -37,6 +40,9 @@ Shop_achtergrond_G=p.image.load ("Shop int_G.png")
 Shop_achtergrond_G=p.transform.scale(Shop_achtergrond_G, (736,600))
 Shop_achtergrond_R=p.image.load ("Shop int_R.png")
 Shop_achtergrond_R=p.transform.scale(Shop_achtergrond_R, (736,600))
+gBox = p.image.load("LB_G.png")
+rBox = p.image.load("LB_R.png")
+Placeholder = p.image.load("Place holder.png")
 muntje=p.image.load ("muntje.png")
 muntje=p.transform.scale(muntje, (40,40))
 muntje_x=625
@@ -88,6 +94,8 @@ while running == True:
     collidngcoinflip = player.get_rect(topleft=(player_x, player_y)).colliderect(coinflipA.get_rect(topleft=(coinflipA_x, coinflipA_y)))
     if collidngcoinflip and keys[p.K_e]:
         game_state = "coinflip"
+    if keys[p.K_i]:
+        game_state = "inventory"
 
     while game_state == "coinflip":
         keys = p.key.get_pressed()
@@ -190,6 +198,7 @@ while running == True:
                 running = False
         p.display.flip()
         clock.tick(60)
+
     while game_state == "dice":
         keys = p.key.get_pressed()
         screen.blit(dobbelsteenachtergrond, (0, 0))
@@ -266,8 +275,44 @@ while running == True:
                 running = False
         p.display.flip()
         clock.tick(60)
-    
+        
+    while game_state == "inventory":
+
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                running = False
+
+        keys = p.key.get_pressed()
+        
+        screen.fill((30,30,30))
+
+        title = font.render("Inventory", True, (255,255,255))
+        screen.blit(title, (300,50))
+
+        screen.blit(gBox, (-50,-50))
+        screen.blit(rBox, (150,-50))
+        screen.blit(font.render(str(inventory["LuckyBox_G"]), True, (255,255,255)), (250,250))
+        screen.blit(font.render(str(inventory["LuckyBox_R"]), True, (255,255,255)), (450,250))
+
+        Open_G = font.render("Durk op G om een Gouden Lucky Box te openen", True, (255,255,255))
+        Open_R = font.render("Durk op R om een Regenboog Lucky Box te openen", True, (255,255,255))
+        screen.blit(Open_G,(80, 300))
+        screen.blit(Open_R,(60, 400))
+        exit_text = font.render("Of druk ESC om te sluiten", True, (255,255,255))
+        screen.blit(exit_text, (230,500))
+
+        if keys[p.K_g] and (inventory["LuckyBox_G"]) > 0:
+            game_state = "op_G"
+        if keys[p.K_r] and (inventory["LuckyBox_R"]) > 0:
+            game_state = "op_R"
+        if keys[p.K_ESCAPE]:
+            game_state = "main"
+
+        p.display.flip()
+        clock.tick(60) 
+
     while game_state == "shop":
+
         keys = p.key.get_pressed()
         screen.blit(Shop_achtergrond, (0, 0))
         for event in p.event.get():
@@ -293,17 +338,25 @@ while running == True:
             screen.blit(Shop_achtergrond_G, (0, 0))
             screen.blit(font.render("Een Goude Lucky Box zit nu in je inventory", True, (255,255,255)), (150, 40))
             screen.blit(font.render("Klik op enter om door te gaan", True, (255,255,255)), (150, 80))
-            LuckyBox_G = LuckyBox_G + 1
+            if not shop_betaald:
+                inventory["LuckyBox_G"] += 1
+                geld -= 500
+                shop_betaald = True
             if keys[p.K_RETURN]:
+                shop_betaald = False
                 Shop_status = "exit" 
 
         elif Shop_status == "recieved_R":
             screen.blit(Shop_achtergrond_R, (0, 0))
             screen.blit(font.render("Een Regenboog Lucky Box zit nu in je inventory", True, (255,255,255)), (150, 40))
             screen.blit(font.render("Klik op enter om door te gaan", True, (255,255,255)), (150, 80))
-            LuckyBox_G = LuckyBox_G + 1
+            if not shop_betaald:
+                inventory["LuckyBox_R"] += 1
+                geld -= 500
+                shop_betaald = True
             if keys[p.K_RETURN]:
-                Shop_status = "exit"
+                shop_betaald = False
+                Shop_status = "exit" 
 
         elif Shop_status == "exit":
             screen.blit(font.render("Druk ESC om terug te gaan naar de map", True, (255,255,255)), (150, 40))
@@ -311,6 +364,33 @@ while running == True:
                 game_state = "main"
         p.display.flip()
         clock.tick(60)
+
+    while game_state == "op_G":
+        keys = p.key.get_pressed()
+        screen.blit(Placeholder, (0, 0))
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                running = False
+        
+        if keys[p.K_ESCAPE]:
+            game_state = "main"
+
+        p.display.flip()
+        clock.tick(60)
+
+    while game_state == "op_R":
+        keys = p.key.get_pressed()
+        screen.blit(Placeholder, (0, 0))
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                running = False
+        
+        if keys[p.K_ESCAPE]:
+            game_state = "main"
+
+        p.display.flip()
+        clock.tick(60)
+        
 
     screen.blit(platform, (0, 0))
     screen.blit(dobbelsteen, (dobbelsteen_x,dobbelsteen_y))
