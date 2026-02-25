@@ -18,7 +18,23 @@ inventory = {
     "LuckyBox_G": 0,
     "LuckyBox_R": 0
 }
+loot_items_G = [
+    ("Rood Shirt", "RSG.png"),
+    ("Blauw Shirt", "BSG.png"),
+    ("Paars Shirt", "PSG.png"),
+    ("Groen Shirt", "GRSG.png"),
+    ("Geel Shirt", "GESG.png")
+]
+spin_x = 0
+spin_speed = 40
+spinning = True
+start_x = 100
+y = 250
+spacing = 100
+spin_end_time = None
 geld = 1000
+gewonnen_item = None
+center_x = 736 // 2
 screen = p.display.set_mode((736, 600))
 p.display.set_caption("casino basis")
 p.mixer.init()
@@ -49,6 +65,14 @@ Shop_achtergrond_R=p.image.load ("Shop int_R.png")
 Shop_achtergrond_R=p.transform.scale(Shop_achtergrond_R, (736,600))
 gBox = p.image.load("LB_G.png")
 rBox = p.image.load("LB_R.png")
+loaded_items_G = []
+for rarity, img in loot_items_G:
+    image = p.image.load(img)
+    image = p.transform.scale(image, (80,80))
+    loaded_items_G.append((rarity, image))
+spin_items_G = []
+for i in range(50):
+    spin_items_G.append(random.choice(loaded_items_G))
 Placeholder = p.image.load("Place holder.png")
 muntje=p.image.load ("muntje.png")
 muntje=p.transform.scale(muntje, (40,40))
@@ -108,7 +132,7 @@ while running == True:
     if collidngcoinflip and keys[p.K_e]:
         game_state = "coinflip"
     if keys[p.K_i]:
-        game_state = "inventory"
+        game_state = "inventory_B"
     collidingroulette = player.get_rect(topleft=(player_x, player_y)).colliderect(rouletteplatform.get_rect(topleft=(rouletteplatform_x, rouletteplatform_y)))
     if collidingroulette and keys[p.K_e]:
         game_state = "roulette"
@@ -132,6 +156,7 @@ while running == True:
             game_state = "main"
         p.display.flip()
         clock.tick(60)
+
     while game_state == "coinflip":
         keys = p.key.get_pressed()
         screen.blit(coinflipscherm, (0, 0))
@@ -311,7 +336,7 @@ while running == True:
         p.display.flip()
         clock.tick(60)
         
-    while game_state == "inventory":
+    while game_state == "inventory_B":
 
         for event in p.event.get():
             if event.type == p.QUIT:
@@ -331,15 +356,19 @@ while running == True:
 
         Open_G = font.render("Durk op G om een Gouden Lucky Box te openen", True, (255,255,255))
         Open_R = font.render("Durk op R om een Regenboog Lucky Box te openen", True, (255,255,255))
+        Open_KI = font.render("Druk op E om je Kleding inventory te openen", True, (255,255,255))
         screen.blit(Open_G,(80, 300))
-        screen.blit(Open_R,(60, 400))
+        screen.blit(Open_R,(60, 375))
+        screen.blit(Open_KI, (100, 450))
         exit_text = font.render("Of druk ESC om te sluiten", True, (255,255,255))
-        screen.blit(exit_text, (230,500))
+        screen.blit(exit_text, (230,525))
 
         if keys[p.K_g] and (inventory["LuckyBox_G"]) > 0:
             game_state = "op_G"
         if keys[p.K_r] and (inventory["LuckyBox_R"]) > 0:
             game_state = "op_R"
+        if keys[p.K_e]:
+            game_state = "op_I"
         if keys[p.K_ESCAPE]:
             game_state = "main"
 
@@ -353,17 +382,23 @@ while running == True:
         for event in p.event.get():
             if event.type == p.QUIT:
                 running = False
+
+        if keys[p.K_ESCAPE]:
+                Shop_status="choice"
+                game_state = "main"
+
         if Shop_status == "choice":    
             screen.blit(font.render("Je kan tussen twee Lucky boxes kiezen", True, (255,255,255)), (150, 10))
             screen.blit(font.render("Voor een een goude van €500 druk 1", True, (255,255,255)), (150, 50))
             screen.blit(font.render("En voor een een regenboog van €1000 druk 2", True, (255,255,255)), (150, 90))
+            screen.blit(font.render("Druk ESC om terug te gaan naar de map", True, (255,255,255)), (150, 500))
             if keys[p.K_1]:
                 Kost_Box = 500
                 Shop_status = "recieved_G"
             if keys[p.K_2]:
                 Kost_Box = 1000
                 Shop_status = "recieved_R"
-            if Kost_Box > geld:
+            if geld < Kost_Box:
                 screen.blit(font.render("Je hebt niet genoeg geld!", True, (255,0,0)), (150, 40))
                 Kost_Box = 0
                 time.sleep(4)
@@ -379,7 +414,8 @@ while running == True:
                 shop_betaald = True
             if keys[p.K_RETURN]:
                 shop_betaald = False
-                Shop_status = "exit" 
+                Shop_status = "choice"
+                game_state = "main" 
 
         elif Shop_status == "recieved_R":
             screen.blit(Shop_achtergrond_R, (0, 0))
@@ -391,40 +427,56 @@ while running == True:
                 shop_betaald = True
             if keys[p.K_RETURN]:
                 shop_betaald = False
-                Shop_status = "exit" 
-
-        elif Shop_status == "exit":
-            screen.blit(font.render("Druk ESC om terug te gaan naar de map", True, (255,255,255)), (150, 40))
-            if keys[p.K_ESCAPE]:
+                Shop_status = "choice" 
                 game_state = "main"
+
+        
         p.display.flip()
         clock.tick(60)
 
     while game_state == "op_G":
-        keys = p.key.get_pressed()
-        screen.blit(Placeholder, (0, 0))
+
         for event in p.event.get():
             if event.type == p.QUIT:
                 running = False
+        target_index = random.randint(10, len(spin_items_G)-10)
+        target_item = spin_items_G[target_index]
+        target_x = start_x + target_index * spacing
+        stop_position = center_x - target_x
+        screen.fill((20,20,20))
+
+        for i, item in enumerate(spin_items_G):
+            img = item[1]
+            x = 100 + i*100 + spin_x
+            screen.blit(img, (x,250))
+
+        if spinning:
+            spin_x -= spin_speed
+            spin_speed *= 0.97
+
+            if spin_x <= stop_position:
+                spin_x = stop_position
+                spinning = False
+                gewonnen_item = target_item
+                spin_end_time = p.time.get_ticks()
         
-        if keys[p.K_ESCAPE]:
-            game_state = "main"
+        if not spinning and spin_end_time:
+            if p.time.get_ticks() - spin_end_time > 2000:
+                inventory["LuckyBox_G"] -= 1
+                spinning = True
+                spin_speed = 40
+                spin_x = 0
+                gewonnen_item = None
+                spin_end_time = None
+                game_state = "inventory_B"
+
+        if gewonnen_item:
+            screen.blit(font.render( gewonnen_item[0], True, (255,0,0)), (150, 40))
+        p.draw.rect(screen, (255,255,0), (368,230,5,120))
 
         p.display.flip()
         clock.tick(60)
-
-    while game_state == "op_R":
-        keys = p.key.get_pressed()
-        screen.blit(Placeholder, (0, 0))
-        for event in p.event.get():
-            if event.type == p.QUIT:
-                running = False
-        
-        if keys[p.K_ESCAPE]:
-            game_state = "main"
-
-        p.display.flip()
-        clock.tick(60)
+    
         
 
     screen.blit(platform, (0, 0))
