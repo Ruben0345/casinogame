@@ -65,6 +65,8 @@ Shop_achtergrond_R=p.image.load ("Shop int_R.png")
 Shop_achtergrond_R=p.transform.scale(Shop_achtergrond_R, (736,600))
 gBox = p.image.load("LB_G.png")
 rBox = p.image.load("LB_R.png")
+inventory_map = p.image.load("inventory map.png")
+inventory_map = p.transform.scale(inventory_map, (50,50))
 loaded_items_G = []
 for rarity, img in loot_items_G:
     image = p.image.load(img)
@@ -476,13 +478,13 @@ while running == True:
 
         p.display.flip()
         clock.tick(60)
-    
-        
+            
 
     screen.blit(platform, (0, 0))
     screen.blit(dobbelsteen, (dobbelsteen_x,dobbelsteen_y))
     screen.blit(Shop, (Shop_x, Shop_y))
     screen.blit(muntje, (muntje_x,muntje_y))
+    screen.blit(inventory_map, (10, 540))
     screen.blit(rouletteplatform, (rouletteplatform_x, rouletteplatform_y)) 
     screen.blit(coinflipA, (coinflipA_x, coinflipA_y))
     geld_rechtsboven = font.render(str(geld), True, (255,255,255))
