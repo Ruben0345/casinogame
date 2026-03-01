@@ -56,7 +56,7 @@ start_y_KI = 130
 y = 250
 spacing = 130
 spin_end_time = None
-geld = 1000
+geld = 500
 gewonnen_item = None
 center_x = 736 // 2
 screen = p.display.set_mode((736, 600))
@@ -598,10 +598,10 @@ while running == True:
             screen.blit(font.render("En voor een een regenboog van €1000 druk 2", True, (255,255,255)), (150, 90))
             screen.blit(font.render("Druk ESC om terug te gaan naar de map", True, (255,255,255)), (150, 500))
             if keys[p.K_1]:
-                Kost_Box = 500
+                Kost_Box = 250
                 Shop_status = "recieved_G"
             if keys[p.K_2]:
-                Kost_Box = 1000
+                Kost_Box = 500
                 Shop_status = "recieved_R"
             if geld < Kost_Box:
                 screen.blit(font.render("Je hebt niet genoeg geld!", True, (255,0,0)), (150, 40))
@@ -615,7 +615,7 @@ while running == True:
             screen.blit(font.render("Klik op enter om door te gaan", True, (255,255,255)), (150, 80))
             if not shop_betaald:
                 inventory["LuckyBox_G"] += 1
-                geld -= 500
+                geld -= 250
                 shop_betaald = True
             if keys[p.K_RETURN]:
                 shop_betaald = False
@@ -628,7 +628,7 @@ while running == True:
             screen.blit(font.render("Klik op enter om door te gaan", True, (255,255,255)), (150, 80))
             if not shop_betaald:
                 inventory["LuckyBox_R"] += 1
-                geld -= 1000
+                geld -= 500
                 shop_betaald = True
             if keys[p.K_RETURN]:
                 shop_betaald = False
