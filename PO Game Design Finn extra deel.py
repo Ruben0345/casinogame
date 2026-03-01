@@ -594,8 +594,8 @@ while running == True:
 
         if Shop_status == "choice":    
             screen.blit(font.render("Je kan tussen twee Lucky boxes kiezen", True, (255,255,255)), (150, 10))
-            screen.blit(font.render("Voor een een goude van €500 druk 1", True, (255,255,255)), (150, 50))
-            screen.blit(font.render("En voor een een regenboog van €1000 druk 2", True, (255,255,255)), (150, 90))
+            screen.blit(font.render("Voor een een goude van €250 druk 1", True, (255,255,255)), (150, 50))
+            screen.blit(font.render("En voor een een regenboog van €500 druk 2", True, (255,255,255)), (150, 90))
             screen.blit(font.render("Druk ESC om terug te gaan naar de map", True, (255,255,255)), (150, 500))
             if keys[p.K_1]:
                 Kost_Box = 250
