@@ -56,6 +56,7 @@ start_y_KI = 130
 y = 250
 spacing = 130
 spin_end_time = None
+all_earnings = 0
 geld = 500
 gewonnen_item = None
 center_x = 736 // 2
@@ -118,6 +119,16 @@ muntje=p.image.load ("muntje.png")
 muntje=p.transform.scale(muntje, (40,40))
 muntje_x=625
 muntje_y=50
+Geld_W = p.image.load ("GW.png")
+Geld_W = p.transform.scale(Geld_W, (40,40))
+Geld_M = p.image.load ("GM.png")
+Geld_M = p.transform.scale(Geld_M, (53,53))
+Geld_NM = p.image.load ("GNM.png")
+Geld_NM = p.transform.scale(Geld_NM, (45,45))
+Geld_V = p.image.load ("GV.png")
+Geld_V = p.transform.scale(Geld_V, (50,50))
+Geld_ME = p.image.load ("GME.png")
+Geld_ME = p.transform.scale(Geld_ME, (60,60))
 coinflipA=p.image.load("coinflip.png")
 coinflipA=p.transform.scale(coinflipA, (50,50))
 coinflipA_x=227
@@ -265,10 +276,12 @@ while running == True:
             if not roulette_uitbetaald:
                 if roulette_choice == roulette_result:
                     geld += roulette_bet * 9
+                    all_earnings += roulette_bet * 9
                     roulette_uitbetaald = True
                     roulette_gewonnen = True
                 elif roulette_choice == kleur:
                     geld += roulette_bet * 2
+                    all_earnings += roulette_bet * 2
                     roulette_uitbetaald = True
                     roulette_gewonnen = True
                 else:
@@ -353,6 +366,7 @@ while running == True:
                 screen.blit(font.render("Je hebt gewonnen!", True, (0,255,0)), (200, 300))
                 if not uitbetaald:
                     geld += bet
+                    all_earnings += bet
                     uitbetaald = True
             else:
                 screen.blit(font.render("Je hebt verloren!", True, (255,0,0)), (200, 300)) 
@@ -383,6 +397,7 @@ while running == True:
                 if not uitbetaald:
                     uitbetaald = True
                     geld += bet
+                    all_earnings += bet
                     uitbetaald = True
             else:
                 screen.blit(font.render("Je hebt verloren!", True, (255,0,0)), (200, 300)) 
@@ -456,6 +471,7 @@ while running == True:
                 if roll == choice:
                     gewonnen_dobbelspel = True 
                     geld += bet * 5
+                    all_earnings += bet * 5
                 else:
                     geld -= bet
                     gewonnen_dobbelspel = False
@@ -760,6 +776,18 @@ while running == True:
     screen.blit(coinflipA, (coinflipA_x, coinflipA_y))
     geld_rechtsboven = font.render(str(geld), True, (255,255,255))
     screen.blit(geld_rechtsboven, (665, 58))
+    All_time_earnings = font.render(str(all_earnings), True, (255,255,255))
+    screen.blit(All_time_earnings, (665, 120))
+    if all_earnings <= 50:
+        screen.blit(Geld_W, (625, 110))
+    if all_earnings > 50 and all_earnings <= 100:
+        screen.blit(Geld_M, (620, 105))
+    if all_earnings > 100 and all_earnings <= 250:
+        screen.blit(Geld_NM, (625, 110))
+    if all_earnings > 250 and all_earnings <= 500:
+        screen.blit(Geld_V, (620, 105))
+    if all_earnings > 500 and all_earnings <= 1000:
+        screen.blit(Geld_ME, (610, 93))
     screen.blit(player, (player_x,player_y))
     if time.time() < text_show_until:
         screen.blit(text, (20, 20))
