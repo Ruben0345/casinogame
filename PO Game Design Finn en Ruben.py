@@ -15,15 +15,24 @@ bet = 0
 Kost_Box = 0
 choice = 0
 inventory = {
-    "LuckyBox_G": 0,
-    "LuckyBox_R": 0
+    "LuckyBox_G": 10,
+    "LuckyBox_R": 10
 }
+kle_inventory_G = []
+kle_inventory_R = []
 loot_items_G = [
     ("Rood Shirt", "RSG.png"),
     ("Blauw Shirt", "BSG.png"),
     ("Paars Shirt", "PSG.png"),
     ("Groen Shirt", "GRSG.png"),
     ("Geel Shirt", "GESG.png")
+]
+loot_items_R = [
+    ("Shirt met Rode Vlammen", "SRR.png"),
+    ("Shirt met Blauwe Vlammen", "SBR.png"),
+    ("Shirt met Wolven", "SWR.png"),
+    ("Gamer Shirt", "GSR.png"),
+    ("Casino Shirt", "CSR.png")
 ]
 spin_x = 0
 spin_speed = 40
@@ -69,14 +78,23 @@ inventory_map = p.image.load("inventory map.png")
 inventory_map = p.transform.scale(inventory_map, (50,50))
 roulette_wheel = p.image.load("roulette_wheel.png")
 loaded_items_G = []
+loaded_items_R = []
 for rarity, img in loot_items_G:
     image = p.image.load(img)
     image = p.transform.scale(image, (80,80))
     loaded_items_G.append((rarity, image))
+for rarity, img in loot_items_R:
+    image = p.image.load(img)
+    image = p.transform.scale(image, (80,80))
+    loaded_items_R.append((rarity, image))
 spin_items_G = []
+spin_items_R = []
 for i in range(50):
-    spin_items_G.append(random.choice(loaded_items_G))
-Placeholder = p.image.load("Place holder.png")
+    if len(loaded_items_G) > 0:
+        spin_items_G.append(random.choice(loaded_items_G))
+for i in range(50):
+    if len(loaded_items_R) > 0:
+        spin_items_R.append(random.choice(loaded_items_R))
 muntje=p.image.load ("muntje.png")
 muntje=p.transform.scale(muntje, (40,40))
 muntje_x=625
@@ -522,6 +540,10 @@ while running == True:
         for event in p.event.get():
             if event.type == p.QUIT:
                 running = False
+        
+        if len(loaded_items_G) == 0:
+            game_state = "inventory_B"
+            screen.blit(font.render("Je hebt alle items al ontvangen", True, (255,255,255)),(100,100))
         target_index = random.randint(10, len(spin_items_G)-10)
         target_item = spin_items_G[target_index]
         target_x = start_x + target_index * spacing
@@ -542,6 +564,9 @@ while running == True:
                 spinning = False
                 gewonnen_item = target_item
                 spin_end_time = p.time.get_ticks()
+                kle_inventory_G.append(gewonnen_item)
+                if gewonnen_item in loaded_items_G:
+                    loaded_items_G.remove(gewonnen_item)
         
         if not spinning and spin_end_time:
             if p.time.get_ticks() - spin_end_time > 2000:
@@ -551,6 +576,64 @@ while running == True:
                 spin_x = 0
                 gewonnen_item = None
                 spin_end_time = None
+                spin_items_G = []
+                for i in range(50):
+                    if len(loaded_items_G) > 0:
+                        spin_items_G.append(random.choice(loaded_items_G))
+                game_state = "inventory_B"
+
+        if gewonnen_item:
+            screen.blit(font.render( gewonnen_item[0], True, (255,0,0)), (150, 40))
+        p.draw.rect(screen, (255,255,0), (368,230,5,120))
+
+        p.display.flip()
+        clock.tick(60)
+
+    while game_state == "op_R":
+        
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                running = False
+        
+        if len(loaded_items_R) == 0:
+            game_state = "inventory_B"
+            screen.blit(font.render("Je hebt alle items al ontvangen", True, (255,255,255)),(100,100))
+        target_index = random.randint(10, len(spin_items_R)-10)
+        target_item = spin_items_R[target_index]
+        target_x = start_x + target_index * spacing
+        stop_position = center_x - target_x
+        screen.fill((20,20,20))
+
+        for i, item in enumerate(spin_items_R):
+            img = item[1]
+            x = 100 + i*100 + spin_x
+            screen.blit(img, (x,250))
+
+        if spinning:
+            spin_x -= spin_speed
+            spin_speed *= 0.97
+
+            if spin_x <= stop_position:
+                spin_x = stop_position
+                spinning = False
+                gewonnen_item = target_item
+                spin_end_time = p.time.get_ticks()
+                kle_inventory_R.append(gewonnen_item)
+                if gewonnen_item in loaded_items_R:
+                    loaded_items_R.remove(gewonnen_item)
+        
+        if not spinning and spin_end_time:
+            if p.time.get_ticks() - spin_end_time > 2000:
+                inventory["LuckyBox_R"] -= 1
+                spinning = True
+                spin_speed = 40
+                spin_x = 0
+                gewonnen_item = None
+                spin_end_time = None
+                spin_items_R = []
+                for i in range(50):
+                    if len(loaded_items_R) > 0:
+                        spin_items_R.append(random.choice(loaded_items_R))
                 game_state = "inventory_B"
 
         if gewonnen_item:
