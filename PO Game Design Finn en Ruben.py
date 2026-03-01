@@ -14,6 +14,7 @@ shop_betaald = False
 bet = 0
 Kost_Box = 0
 choice = 0
+equipped_item = None
 inventory = {
     "LuckyBox_G": 10,
     "LuckyBox_R": 10
@@ -34,6 +35,18 @@ loot_items_R = [
     ("Gamer Shirt", "GSR.png"),
     ("Casino Shirt", "CSR.png")
 ]
+shirt_images = {
+    "Rood Shirt": "Cha_ROOD.png",
+    "Blauw Shirt": "Cha_BLAUW.png",
+    "Paars Shirt": "Cha_PAARS.png",
+    "Groen Shirt": "Cha_Groen.png",
+    "Geel Shirt": "Cha_GEEL.png",
+    "Shirt met Rode Vlammen": "Cha_Red_Flame.png",
+    "Shirt met Blauwe Vlammen": "Cha_Blue_Flame.png",
+    "Shirt met Wolven": "Cha_Wolf.png",
+    "Gamer Shirt": "Cha_GAMER.png",
+    "Casino Shirt": "Cha_CASINO.png"
+}
 spin_x = 0
 spin_speed = 40
 spinning = True
@@ -131,8 +144,8 @@ player_y = 100
 player_speed = 4
 walking = False
 walk_frame = 0
-player = p.image.load("download.png")
-player = p.transform.scale(player, (50,50))
+player = p.image.load("Cha_PLAIN.png")
+player = p.transform.scale(player, (100,100))
 font = p.font.SysFont(None, 36)
 text = font.render("Welkom, loop naar een spel om het te spelen!", True, (255,255,255))
 
@@ -523,17 +536,29 @@ while running == True:
             if event.type == p.QUIT:
                 running = False
         
+        mouse_pos = p.mouse.get_pos()
+        mouse_click = p.mouse.get_pressed()
+        
         if keys[p.K_ESCAPE]:
                 game_state = "main"
 
-        title_K = font.render("Kleding Inventory", True, (255,255,255))
-        screen.blit(title_K, (250, 50))
-
+        screen.blit(font.render("Kleding Inventory", True, (255,255,255)), (360, 60))
+        if len(kle_inventory_G) > 0 or len (kle_inventory_R) > 0:
+            screen.blit(font.render("Klik op een item dat je wilt gebruiken", True,(255,255,255)), (100, 420) )
+        if len(kle_inventory_G) == 0 and len(kle_inventory_R) == 0:
+            screen.blit(font.render("Je inventory is leeg!", True, (255,255,255)), (100, 420))
         for i, item in enumerate(kle_inventory_G):
             img = item[1]
             x = start_x_KI + (i % 5) * spacing
             y = start_y_KI + (i // 5) * spacing
+            rect = p.Rect(x, y, 80, 80)
             screen.blit(img, (x, y))
+
+            if equipped_item == item:
+                p.draw.rect(screen, (255,255,0), rect, 3)
+        
+            if rect.collidepoint(mouse_pos) and mouse_click[0]:
+                equipped_item = item
 
         offset_y = start_y_KI + 110
 
@@ -541,7 +566,15 @@ while running == True:
             img = item[1]
             x = start_x_KI + (i % 5) * spacing
             y = offset_y + (i // 5) * spacing
+            rect = p.Rect(x, y, 80, 80)
             screen.blit(img, (x, y))
+            if equipped_item == item:
+                p.draw.rect(screen, (255,255,0), rect, 3)
+
+            if rect.collidepoint(mouse_pos) and mouse_click[0]:
+                equipped_item = item
+            
+            
 
 
         p.display.flip()
@@ -714,7 +747,9 @@ while running == True:
         p.display.flip()
         clock.tick(60)
             
-
+    if equipped_item is not None and equipped_item[0] in shirt_images:
+        player = p.image.load(shirt_images[equipped_item[0]])
+        player = p.transform.scale(player, (100,100))
     screen.blit(platform, (0, 0))
     screen.blit(dobbelsteen, (dobbelsteen_x,dobbelsteen_y))
     screen.blit(Shop, (Shop_x, Shop_y))
