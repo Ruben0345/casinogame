@@ -74,7 +74,9 @@ Shop_achtergrond_R=p.image.load ("Shop int_R.png")
 Shop_achtergrond_R=p.transform.scale(Shop_achtergrond_R, (736,600))
 gBox = p.image.load("LB_G.png")
 rBox = p.image.load("LB_R.png")
-inventory_map = p.image.load("inventory map.png")
+inv_ag= p.image.load ("Inventory background.png")
+inv_ag = p.transform.scale(inv_ag, (736,600) )
+inventory_map = p.image.load("inventory op map.png")
 inventory_map = p.transform.scale(inventory_map, (50,50))
 roulette_wheel = p.image.load("roulette_wheel.png")
 loaded_items_G = []
@@ -476,6 +478,20 @@ while running == True:
         p.display.flip()
         clock.tick(60) 
 
+    while game_state == "op_I":
+        
+        keys = p.key.get_pressed()
+        screen.blit(inv_ag, (0, 0))
+        for event in p.event.get():
+            if event.type == p.QUIT:
+                running = False
+        
+        if keys[p.K_ESCAPE]:
+                game_state = "main"
+
+        p.display.flip()
+        clock.tick(60)
+
     while game_state == "shop":
 
         keys = p.key.get_pressed()
@@ -649,6 +665,7 @@ while running == True:
     screen.blit(Shop, (Shop_x, Shop_y))
     screen.blit(muntje, (muntje_x,muntje_y))
     screen.blit(inventory_map, (10, 540))
+    screen.blit(font.render ("(I)", True, (255,255,255)), (25, 510))
     screen.blit(rouletteplatform, (rouletteplatform_x, rouletteplatform_y)) 
     screen.blit(coinflipA, (coinflipA_x, coinflipA_y))
     geld_rechtsboven = font.render(str(geld), True, (255,255,255))
