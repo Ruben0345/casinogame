@@ -38,8 +38,10 @@ spin_x = 0
 spin_speed = 40
 spinning = True
 start_x = 100
+start_x_KI = 70
+start_y_KI = 130
 y = 250
-spacing = 100
+spacing = 130
 spin_end_time = None
 geld = 1000
 gewonnen_item = None
@@ -52,7 +54,7 @@ p.mixer.music.play(-1)
 game_state = "main"
 roulette_status = "bet"
 roulette_bet = 0
-spinning = False
+spinning_Roullette = False
 roulette_gewonnen = False
 roulette_choice = None
 roulette_result = None
@@ -226,9 +228,9 @@ while running == True:
 
             if roulette_speed < 0.5:
                 roulette_spinning = False
-                if not spinning:
+                if not spinning_Roullette:
                     roulette_result = random.randint(0,9)
-                    spinning = True
+                    spinning_Roullette = True
                 roulette_status = "kleur bepalen"
 
             rotated_wheel = p.transform.rotate(roulette_wheel, roulette_angle)
@@ -270,7 +272,7 @@ while running == True:
 
         if keys[p.K_RETURN]:
             roulette_bet = 0
-            spinning = False
+            spinning_Roullette = False
             roulette_gewonnen = False
             roulette_choice = None
             roulette_result = None
@@ -282,7 +284,7 @@ while running == True:
         if keys[p.K_ESCAPE]:
             roulette_status = "bet"
             roulette_bet = 0
-            spinning = False
+            spinning_Roullette = False
             roulette_gewonnen = False
             roulette_choice = None
             roulette_result = None
@@ -524,6 +526,24 @@ while running == True:
         if keys[p.K_ESCAPE]:
                 game_state = "main"
 
+        title_K = font.render("Kleding Inventory", True, (255,255,255))
+        screen.blit(title_K, (250, 50))
+
+        for i, item in enumerate(kle_inventory_G):
+            img = item[1]
+            x = start_x_KI + (i % 5) * spacing
+            y = start_y_KI + (i // 5) * spacing
+            screen.blit(img, (x, y))
+
+        offset_y = start_y_KI + 110
+
+        for i, item in enumerate(kle_inventory_R):
+            img = item[1]
+            x = start_x_KI + (i % 5) * spacing
+            y = offset_y + (i // 5) * spacing
+            screen.blit(img, (x, y))
+
+
         p.display.flip()
         clock.tick(60)
 
@@ -575,7 +595,7 @@ while running == True:
             screen.blit(font.render("Klik op enter om door te gaan", True, (255,255,255)), (150, 80))
             if not shop_betaald:
                 inventory["LuckyBox_R"] += 1
-                geld -= 500
+                geld -= 1000
                 shop_betaald = True
             if keys[p.K_RETURN]:
                 shop_betaald = False
