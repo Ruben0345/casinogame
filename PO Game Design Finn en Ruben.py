@@ -52,6 +52,8 @@ p.mixer.music.play(-1)
 game_state = "main"
 roulette_status = "bet"
 roulette_bet = 0
+spinning = False
+roulette_gewonnen = False
 roulette_choice = None
 roulette_result = None
 roulette_spinning = False
@@ -169,94 +171,127 @@ while running == True:
                 running = False
         if roulette_status == "bet":
             screen.blit(font.render("Kies je inzet: Z=10 X=20 C=50", True, (255,255,255)), (150, 50))
-            screen.blit(font.render("Druk B voor Zwart", True, (255,255,255)), (150, 100))
-            screen.blit(font.render("Druk W voor Wit", True, (255,255,255)), (150, 140))
-            screen.blit(font.render("Druk 0-9 voor een getal", True, (255,255,255)), (150, 180))
-
             if keys[p.K_z]:
                 roulette_bet = 10
             if keys[p.K_x]:
                 roulette_bet = 20
             if keys[p.K_c]:
                 roulette_bet = 50
-
-        # kleur kiezen
-            screen.blit(font.render("Druk B voor Zwart", True, (255,255,255)), (150, 100))
-            screen.blit(font.render("Druk W voor Wit", True, (255,255,255)), (150, 140))
+            elif roulette_bet > geld:
+                screen.blit(font.render("Je hebt niet genoeg geld!", True, (255,0,0)), (150, 40))
+                roulette_bet = 0
+                time.sleep(4)
+                p.display.flip()
+                game_state = "main"
+            elif roulette_bet<= geld and roulette_bet != 0:
+                roulette_status = "choice"
+        elif roulette_status == "choice":
+            screen.blit(font.render("Druk B voor Zwart (even getallen)", True, (255,255,255)), (150, 100))
+            screen.blit(font.render("Druk W voor Wit(oneven getallen)", True, (255,255,255)), (150, 140))
             screen.blit(font.render("Druk 0-9 voor een getal", True, (255,255,255)), (150, 180))
             if keys[p.K_b]:
                 roulette_choice = "zwart"
             if keys[p.K_w]:
                 roulette_choice = "wit"
-
-        # nummer kiezen
-            
-
-            if roulette_bet > 0 and roulette_choice is not None and roulette_bet <= geld:
-                geld -= roulette_bet
+            if keys[p.K_0]:
+                roulette_choice = 0
+            if keys[p.K_1]:
+                roulette_choice = 1
+            if keys[p.K_2]:
+                roulette_choice = 2
+            if keys[p.K_3]:
+                roulette_choice = 3
+            if keys[p.K_4]:
+                roulette_choice = 4
+            if keys[p.K_5]:
+                roulette_choice = 5
+            if keys[p.K_6]:
+                roulette_choice = 6
+            if keys[p.K_7]:
+                roulette_choice = 7
+            if keys[p.K_8]:
+                roulette_choice = 8
+            if keys[p.K_9]:
+                roulette_choice = 9
+            if roulette_choice is not None:
                 roulette_status = "spinning"
                 roulette_spinning = True
                 roulette_speed = random.randint(15, 25)
 
-    # ---------------- SPINNING ----------------
         elif roulette_status == "spinning":
 
             if roulette_spinning:
                 roulette_angle += roulette_speed
-                roulette_speed *= 0.97  # langzaam afremmen
+                roulette_speed *= 0.97
 
             if roulette_speed < 0.5:
                 roulette_spinning = False
-                roulette_result = random.randint(0,9)
-                roulette_status = "result"
+                if not spinning:
+                    roulette_result = random.randint(0,9)
+                    spinning = True
+                roulette_status = "kleur bepalen"
 
             rotated_wheel = p.transform.rotate(roulette_wheel, roulette_angle)
             new_rect = rotated_wheel.get_rect(center=wheel_rect.center)
             screen.blit(rotated_wheel, new_rect)
 
-    # ---------------- RESULTAAT ----------------
-        elif roulette_status == "result":
+
+        elif roulette_status == "kleur bepalen":
 
             screen.blit(font.render(f"Het nummer is {roulette_result}", True, (255,255,0)), (200, 50))
 
-        # bepaal kleur (simpel voorbeeld)
             if roulette_result % 2 == 0:
                 kleur = "zwart"
+                roulette_status = "uitbetalen"
             else:
                 kleur = "wit"
+                roulette_status = "uitbetalen"
+        elif roulette_status == "uitbetalen":
+            if not roulette_uitbetaald:
+                if roulette_choice == roulette_result:
+                    geld += roulette_bet * 9
+                    roulette_uitbetaald = True
+                    roulette_gewonnen = True
+                elif roulette_choice == kleur:
+                    geld += roulette_bet * 2
+                    roulette_uitbetaald = True
+                    roulette_gewonnen = True
+                else:
+                    geld -= roulette_bet
+                    roulette_uitbetaald = True
 
-            gewonnen = False
-
-            if roulette_choice == roulette_result:
-                geld += roulette_bet * 5
-                gewonnen = True
-            elif roulette_choice == kleur:
-                geld += roulette_bet * 2
-                gewonnen = True
-            else:
-                geld -= roulette_bet
-
-            if gewonnen:
+            elif roulette_gewonnen:
                 screen.blit(font.render("Je hebt gewonnen!", True, (0,255,0)), (200, 100))
             else:
                 screen.blit(font.render("Je hebt verloren!", True, (255,0,0)), (200, 100))
 
-            screen.blit(font.render("ENTER = opnieuw | ESC = terug", True, (255,255,255)), (150, 150))
+            screen.blit(font.render("Druk enter om opnieuw te spelen", True, (255,255,255)), (150, 150))
+            screen.blit(font.render("Druk ESC om terug te gaan naar de map", True, (255,255,255)), (150, 200))
 
         if keys[p.K_RETURN]:
-            roulette_status = "bet"
             roulette_bet = 0
+            spinning = False
+            roulette_gewonnen = False
             roulette_choice = None
+            roulette_result = None
+            roulette_spinning = False
+            roulette_angle = 0
+            roulette_speed = 0
             roulette_uitbetaald = False
-
+            roulette_status = "bet"
         if keys[p.K_ESCAPE]:
             roulette_status = "bet"
             roulette_bet = 0
+            spinning = False
+            roulette_gewonnen = False
             roulette_choice = None
+            roulette_result = None
+            roulette_spinning = False
+            roulette_angle = 0
+            roulette_speed = 0
+            roulette_uitbetaald = False
             game_state = "main"
       
-        if keys[p.K_ESCAPE]:
-            game_state = "main"
         p.display.flip()
         clock.tick(60)
 
