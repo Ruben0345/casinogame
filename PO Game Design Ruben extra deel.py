@@ -4,6 +4,8 @@ import random
 
 #variabelen, gamestates en muziek hieronder
 p.init()
+games_played = 0
+bonus_claimed = False
 dobbelspel_status = "bet"
 Shop_status = "choice"
 coinflip_status = "bet"
@@ -177,7 +179,12 @@ while running == True:
     collidingroulette = player.get_rect(topleft=(player_x, player_y)).colliderect(rouletteplatform.get_rect(topleft=(rouletteplatform_x, rouletteplatform_y)))
     if collidingroulette and keys[p.K_e]:
         game_state = "roulette"
-
+    if not bonus_claimed and games_played >= 10:
+        screen.blit(font.render("Je hebt een bonus gekregen!", True, (255,255,0)), (150, 300))
+        geld += 300
+        p.display.flip()
+        p.time.delay(2500)
+        bonus_claimed = True
     while game_state == "roulette":
         keys = p.key.get_pressed()
         screen.blit(rouletteachtergrond, (0, 0))
@@ -263,6 +270,7 @@ while running == True:
                 roulette_status = "uitbetalen"
         elif roulette_status == "uitbetalen":
             if not roulette_uitbetaald:
+                games_played += 1
                 if roulette_choice == roulette_result:
                     geld += roulette_bet * 9
                     roulette_uitbetaald = True
@@ -314,10 +322,10 @@ while running == True:
         keys = p.key.get_pressed()
         screen.blit(coinflipscherm, (0, 0))
         if coinflip_status == "bet":
-            screen.blit(font.render("kies hoeveel je wilt inzetten!", True, (255,255,0)), (200, 100))
-            screen.blit(font.render("druk 'Z' voor 10", True, (255,255,0)), (300, 140))
-            screen.blit(font.render("druk 'X' voor 20", True, (255,255,0)), (300, 180))
-            screen.blit(font.render("druk 'C' voor 50", True, (255,255,0)), (300, 220))
+            screen.blit(font.render("kies hoeveel je wilt inzetten!", True, (255,0,0)), (200, 100))
+            screen.blit(font.render("druk 'Z' voor 10", True, (255,0,0)), (300, 140))
+            screen.blit(font.render("druk 'X' voor 20", True, (255,0,0)), (300, 180))
+            screen.blit(font.render("druk 'C' voor 50", True, (255,0,0)), (300, 220))
             if keys[p.K_z]:
                 bet = 10
             if keys[p.K_x]:
@@ -334,7 +342,7 @@ while running == True:
             elif bet<= geld and bet != 0:
                 coinflip_status = "choice"
         elif coinflip_status == "choice":
-            screen.blit(font.render("kies kop of munt! druk K voor kop en M voor munt", True, (255,255,0)), (200, 100))
+            screen.blit(font.render("kies kop of munt! druk K voor kop en M voor munt", True, (255,0,0)), (200, 100))
             if keys[p.K_k]: choice = "kop" 
             if keys[p.K_m]: choice = "munt" 
             if choice != 0:
@@ -352,11 +360,13 @@ while running == True:
             if choice == "kop":
                 screen.blit(font.render("Je hebt gewonnen!", True, (0,255,0)), (200, 300))
                 if not uitbetaald:
+                    games_played += 1
                     geld += bet
                     uitbetaald = True
             else:
                 screen.blit(font.render("Je hebt verloren!", True, (255,0,0)), (200, 300)) 
                 if not uitbetaald:
+                    games_played += 1
                     geld -= bet
                     uitbetaald = True
             screen.blit(font.render("Druk ESC om terug te gaan naar de map", True, (255,255,255)), (200, 100))
@@ -381,12 +391,14 @@ while running == True:
             if choice == "munt":
                 screen.blit(font.render("Je hebt gewonnen!", True, (0,255,0)), (200, 300))
                 if not uitbetaald:
+                    games_played += 1
                     uitbetaald = True
                     geld += bet
                     uitbetaald = True
             else:
                 screen.blit(font.render("Je hebt verloren!", True, (255,0,0)), (200, 300)) 
                 if not uitbetaald:
+                    games_played += 1
                     geld -= bet
                     uitbetaald = True
             screen.blit(font.render("Druk ESC om terug te gaan naar de map", True, (255,255,255)), (200, 100))
@@ -459,6 +471,7 @@ while running == True:
                 else:
                     geld -= bet
                     gewonnen_dobbelspel = False
+                games_played += 1
                 uitbetaald = True
             if gewonnen_dobbelspel:
                 screen.blit(font.render(f"Je hebt gewonnen! Het cijfer was {roll}", True, (0,255,0)), (200, 300))
@@ -756,13 +769,14 @@ while running == True:
     screen.blit(muntje, (muntje_x,muntje_y))
     screen.blit(inventory_map, (10, 540))
     screen.blit(font.render ("(I)", True, (255,255,255)), (25, 510))
+    screen.blit(font.render(f"potjes gespeeld: {games_played}", True, (255,255,255)), (150, 10))
     screen.blit(rouletteplatform, (rouletteplatform_x, rouletteplatform_y)) 
     screen.blit(coinflipA, (coinflipA_x, coinflipA_y))
     geld_rechtsboven = font.render(str(geld), True, (255,255,255))
     screen.blit(geld_rechtsboven, (665, 58))
     screen.blit(player, (player_x,player_y))
     if time.time() < text_show_until:
-        screen.blit(text, (20, 20))
+        screen.blit(text, (20, 30))
     if collidingroulette:
         screen.blit(font.render("Druk E om te spelen", True, (255,255,0)), (20, 60))
     if collidingdobbel:
