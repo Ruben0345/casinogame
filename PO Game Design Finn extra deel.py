@@ -16,8 +16,8 @@ Kost_Box = 0
 choice = 0
 equipped_item = None
 inventory = {
-    "LuckyBox_G": 10,
-    "LuckyBox_R": 10
+    "LuckyBox_G": 0,
+    "LuckyBox_R": 0
 }
 kle_inventory_G = []
 kle_inventory_R = []
